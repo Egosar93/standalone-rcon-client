@@ -1,89 +1,154 @@
 # Standalone RCON Client
 
-Ein einfacher Standalone-RCON-Client mit einer Weboberfläche zur Kommunikation mit RCON-kompatiblen Spieleservern. Die Anwendung nutzt Flask als Backend und bietet eine benutzerfreundliche Weboberfläche für die Verwaltung und das Senden von RCON-Befehlen.
+Ein einfacher, webbasiertes RCON-Tool für CS2-Server. Die Anwendung nutzt Flask als Backend und bietet eine benutzerfreundliche Weboberfläche für die Verwaltung und das Senden von RCON-Befehlen.
 
-## Features
+## 📌 **Features**
+- ✅ **Web-Oberfläche für RCON-Befehle**
+- ✅ **Steam-Login zur Authentifizierung**
+- ✅ **Sicherheitsmaßnahmen** (nur Zugriff auf Server, auf denen man spielt)
+- ✅ **Server-Management** (Admins können Server hinzufügen/löschen)
+- ✅ **Knife Round**
+- ✅ **Admin-Berechtigungen per SteamID**
 
-- Weboberfläche für die einfache RCON-Kommunikation
-- Speichern von Serverkonfigurationen (IP-Adresse, Port, RCON-Passwort)
-- Unterstützung für mehrere RCON-Befehle
-- Beispielbefehle und Spielmodi zur schnellen Eingabe
-- Minimalistische, konsoleartige Benutzeroberfläche
+---
 
-## Installation
+## 🛠️ **Installation**
+### 🔹 **Voraussetzungen**
+- **Docker (empfohlen)** oder **Python 3.12**
+- **Steam API Key**
+- **.env Datei für sichere Konfiguration**
 
-### Voraussetzungen
+---
 
-- Docker (empfohlen)
-- Python 3.12 oder höher (falls du die Anwendung lokal ohne Docker ausführen möchtest)
+## 🚀 **1. Mit Docker ausführen (empfohlen)**  
+Falls du Docker nutzt, führe folgende Befehle aus:
 
-### Mit Docker ausführen
+```bash
+# Repository klonen
+git clone https://github.com/Egosar93/standalone-rcon-client.git
+cd standalone-rcon-client
 
-1. Repository klonen:
+# Docker-Container bauen
+docker build -t rcon-flask-app .
 
-   ```bash
-   git clone https://git.maxlan.de/mregosar/standalone-rcon-client
-   cd standalone-rcon-client
-   ```
+# Docker-Container starten
+docker run -d -p 5000:5000 --env-file .env rcon-flask-app
+```
 
-2. Docker-Container bauen:
+Die Web-Oberfläche ist nun unter **http://localhost:5000** erreichbar.
 
-   ```bash
-   docker build -t rcon-flask-app .
-   ```
+---
 
-3. Docker-Container starten:
+## 🏠 **2. Manuelle Installation ohne Docker**
+Falls du das Tool ohne Docker betreiben willst:
 
-   ```bash
-   docker run -d -p 5000:5000 rcon-flask-app
-   ```
+```bash
+# Repository klonen
+git clone https://github.com/Egosar93/standalone-rcon-client.git
+cd standalone-rcon-client
 
-4. Rufe die Webanwendung in deinem Browser auf:
+# Virtuelle Umgebung erstellen & aktivieren
+python3 -m venv venv
+source venv/bin/activate  # Für Windows: venv\Scripts\activate
 
-   ```
-   http://localhost:5000
-   ```
+# Abhängigkeiten installieren
+pip install -r requirements.txt
 
-### Lokale Installation
+# Anwendung starten
+python app.py
+```
 
-1. Repository klonen:
+Danach kannst du die Web-Oberfläche unter **http://localhost:5000** aufrufen.
 
-   ```bash
-   git clone https://git.maxlan.de/mregosar/standalone-rcon-client
-   cd standalone-rcon-client
-   ```
+---
 
-2. (Optional) Virtuelle Umgebung erstellen und aktivieren:
+## 🔑 **3. Steam API Key & Admins konfigurieren**
+Damit Steam-Login funktioniert, musst du einen **Steam API Key** anlegen und Admin-IDs hinterlegen.
 
-   ```bash
-   python3 -m venv venv
-   source venv/bin/activate  # Für Windows: venv\Scripts\activate
-   ```
+### **📄 `.env` Datei erstellen**
+Erstelle eine Datei namens **`.env`** im Hauptverzeichnis des Projekts:
 
-3. Abhängigkeiten installieren:
+```bash
+nano .env
+```
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+Füge dort folgende Inhalte ein:
 
-4. Flask-Anwendung starten:
+```ini
+# Steam API Key für Login
+STEAM_API_KEY=dein_steam_api_key
 
-   ```bash
-   python app.py
-   ```
+# Geheimschlüssel für Flask-Session
+SECRET_KEY=ein_geheimer_schluessel
 
-5. Rufe die Webanwendung in deinem Browser auf:
+# Admin-IDs (SteamID64, durch Komma getrennt)
+ADMIN_STEAM_IDS=
+```
 
-   ```
-   http://localhost:5000
-   ```
+**🚨 WICHTIG:**  
+- **STEAM_API_KEY** kannst du unter [https://steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey) erstellen.
+- **SteamID64** kannst du unter [https://steamid.io/](https://steamid.io/) finden.
+- **SECRET_KEY** sollte ein zufälliger, langer String sein (z. B. mit `openssl rand -hex 32` generieren).
 
-## Verwendung
+Danach speichere die `.env`-Datei und starte das Tool neu.
 
-1. Gib die Serverinformationen (IP-Adresse, Port, RCON-Passwort) ein.
-2. Wähle einen RCON-Befehl aus der Dropdown-Liste oder gib einen benutzerdefinierten Befehl ein.
-3. Klicke auf **"Send Command"**, um den Befehl an den Server zu senden.
-4. Die Antwort des Servers wird im unteren Bereich angezeigt.
+---
 
+## 🔑 **4. Admin-Funktionalitäten**
+### **Wie werde ich Admin?**
+Admins werden anhand ihrer **SteamID64** identifiziert. Falls deine SteamID in der `.env` unter `ADMIN_STEAM_IDS` steht, bekommst du Admin-Rechte.
 
+### **Was kann ein Admin?**
+✅ **Server hinzufügen & löschen**  
+✅ **Alle normalen Funktionen nutzen**  
+
+**🚀 So fügst du einen Server hinzu:**  
+1. Logge dich mit **Steam** ein  
+2. Trage die **IP-Adresse, Port und RCON-Passwort** ein  
+3. Klicke auf **„Server speichern“**  
+
+**🛠 So löschst du einen Server:**  
+1. Wähle den Server aus der Liste  
+2. Klicke auf **„Server löschen“**  
+
+Falls du kein Admin bist, kannst du **nur Server aus der Liste auswählen, aber keine hinzufügen oder löschen.**
+
+---
+
+## 🎮 **5. Nutzung für Spieler**
+### **🔹 Schritte zur Nutzung**
+1. Logge dich per Steam-Login ein  
+2. Joine auf einen Server und merke dir die **IP & Port**  
+3. Wähle deinen Server aus der **Gespeicherte Server**-Liste  
+4. Wähle einen **Spielmodus & Karte**  
+5. Wähle einen **RCON-Befehl** oder gib ihn manuell ein  
+6. Klicke auf **„Send Command“**  
+
+---
+
+## 🛡 **6. Schutz vor Missbrauch**
+- **Nur Spieler auf einem Server können RCON-Befehle senden**
+- **Admin-Rechte werden anhand der SteamID64 aus der `.env` überprüft**
+- **RCON-Zugriff nur mit hinterlegtem Passwort**
+- **Kein direktes Speichern von sensiblen Daten in der Datenbank**
+
+---
+
+## 🤖 **Mitwirken**
+Falls du helfen willst, das Projekt zu verbessern:
+1. **Forke das Repository** auf GitHub  
+2. **Erstelle einen Branch** für deine Änderungen  
+3. **Erstelle einen Pull-Request** 🚀  
+
+---
+
+## **🎓 Lizenz**
+Dieses Projekt steht unter der **MIT-Lizenz**.  
+
+🔗 **Projektseite:** [https://github.com/Egosar93/standalone-rcon-client](https://github.com/Egosar93/standalone-rcon-client)  
+📧 **Support:** Falls du Fragen hast, erstelle ein **GitHub-Issue** oder melde dich im Discord.
+
+---
+
+**🚀 Viel Spaß mit dem Standalone RCON Client! 🎮**
 
