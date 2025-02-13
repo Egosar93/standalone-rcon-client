@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/static/favicon.ico" type="image/png">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script src="/static/script.js"></script>
+    <title>RCON Console</title>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <h2>🔹 Anleitung</h2>
+      <ul>
+        <li>🔹 Logge dich über die Steam-Serverliste auf einen Server ein und merke dir die IP sowie den Port.</li>
+        <li>🔹 Wähle deinen zuvor gemerkten Server aus der Liste „Gespeicherte Server“ aus.</li>
+        <li>🔹 Du hast nur Zugriff auf den Server, auf dem du aktuell spielst.</li> 
+        <li>🔹 Wähle einen Spielmodus und eine Karte.</li>
+        <li>🔹 Wähle einen RCON-Befehl oder gib ihn manuell ein.</li>
+        <li>🔹 Klicke auf **"Send Command"**, um den Befehl auszuführen.</li>
+        <li>🔹 **Knife Round** starten → separater Button</li>
+      </ul>
+    </aside>
+
+    <div class="content">
+      <img src="/static/logo.png" alt="Logo" class="logo">
+      <h1>RCON Console</h1>
+
+      {% if 'steam_id' in session %}
+      <p>Angemeldet als <u>{{ session['steam_name'] }}</u></p>
+      <a href="/logout" class="button_logout">Abmelden</a>
+      
+      <form onsubmit="sendCommand(event)">
+          <label for="serverList">Gespeicherte Server:</label>
+          <select id="serverList" onchange="selectServer()">
+            <option value="">-- Wähle einen Server --</option>
+          </select>
+          
+          {% if session.get('role') == 'admin' %}
+          <div class="admin-section">
+            <label for="server">Server:</label>
+            <input type="text" id="server" name="server" placeholder="z.B. 192.168.1.100" required>
+            
+            <label for="port">Port:</label>
+            <input type="text" id="port" name="port" placeholder="z.B. 27015" required>
+            
+            <label for="password">RCON Password:</label>
+            <input type="password" id="password" name="password" placeholder="RCON-Passwort" required>
+
+            <button type="button" onclick="saveServer()">Server speichern</button>
+            <button type="button" onclick="deleteServer()">Server löschen</button>
+          </div>
+          {% endif %}
+
+          <label for="gameMode">Game Mode:</label>
+          <select id="gameMode">
+            <option value="">-- Wähle einen Spielmodus --</option>
+          </select>
+
+          <label for="map">Map:</label>
+          <select id="map">
+            <option value="">-- Wähle eine Karte --</option>
+          </select>
+          
+          <label for="commandList">Beispielbefehle:</label>
+          <select id="commandList" onchange="selectCommand()">
+            <option value="">-- Wähle einen Befehl --</option>
+          </select>
+
+          <button type="button" onclick="startKnifeRound()">Knife Round starten</button>
+          
+          <label for="command">Command:</label>
+          <input type="text" id="command" name="command" placeholder="Befehl eingeben oder auswählen" required>
+          
+          <input type="submit" value="Send Command">
+      </form>
+      
+      <pre id="response"></pre>
+      <div id="error" style="color: red; margin-top: 10px;"></div>
+
+      {% else %}
+        <h3>Bitte melde dich mit deinem Steam Account an.</h3>
+        <br>
+        <a href="/login">
+          <img src="https://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_01.png" 
+               alt="Mit Steam anmelden" class="steam-login-button" />
+        </a>
+      {% endif %}
+    </div>
+  </body>
+</html>

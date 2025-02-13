@@ -1,0 +1,9 @@
+version: '3'
+services:
+  rcon-client:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - STEAM_API_KEY=
+      - SECRET_KEY=
