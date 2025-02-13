@@ -10,12 +10,6 @@ import sqlite3
 
 db = SQLAlchemy()
 
-class Server(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    server = db.Column(db.String(100), nullable=False)
-    port = db.Column(db.String(10), nullable=False)
-    password = db.Column(db.String(100), nullable=False)
-
 # Laden der Umgebungsvariablen
 load_dotenv()
 
