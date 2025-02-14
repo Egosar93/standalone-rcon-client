@@ -12,6 +12,8 @@ db = SQLAlchemy()
 
 # Laden der Umgebungsvariablen
 load_dotenv()
+ADMIN_OVERRIDE = os.getenv('ADMIN_OVERRIDE', 'false').lower() == 'true'
+PLAYER_OVERRIDE = os.getenv('PLAYER_OVERRIDE', 'false').lower() == 'true'
 
 app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY')  
@@ -157,10 +159,12 @@ def delete_server(server_id):
 
 
 
+import traceback
+
 @app.route('/send-command', methods=['POST'])
 def send_command():
     if 'steam_name' not in session:
-        return jsonify({"error": "Bitte zuerst über Steam anmelden"}), 403
+        return jsonify({"error": "Authentifizierungsfehler: Bitte zuerst über Steam anmelden."}), 403
 
     data = request.json
     server = data.get("server")
@@ -169,24 +173,41 @@ def send_command():
     command = data.get("command")
 
     if not server or not port or not password or not command:
-        return jsonify({"error": "Ungültige Anfrage: Fehlende Parameter"}), 400
+        return jsonify({"error": "Fehlende Parameter: Bitte stelle sicher, dass Server, Port, Passwort und Befehl ausgefüllt sind."}), 400
 
     try:
         # Verbindung zum Server herstellen
         with Client(server, int(port), passwd=password) as client:
             # Spielerinformationen abrufen
-            response = client.run('status')  # Status-Befehl ausführen
+            response = client.run('status')
             player_names = extract_player_names(response)
 
-            # Überprüfen, ob der eingeloggte Benutzer auf dem Server spielt
-            if session['steam_name'] not in player_names:
-                return jsonify({"error": "Du bist nicht auf diesem Server verbunden"}), 403
+            # Falls kein Spieler gefunden wurde
+            if not player_names:
+                return jsonify({"error": "Spielerliste konnte nicht abgerufen werden. Stelle sicher, dass der Server läuft und korrekt erreichbar ist."}), 500
+
+            # Admin-Override-Check
+            is_admin = session.get('role') == 'admin'
+            if not is_admin and session['steam_name'] not in player_names:
+                return jsonify({"error": "Zugriff verweigert: Du bist nicht mit dem Server verbunden."}), 403
 
             # Befehl ausführen
             command_response = client.run(command)
             return jsonify({"response": command_response})
+
+    except ConnectionRefusedError:
+        return jsonify({"error": f"Verbindungsfehler: Der RCON-Server unter {server}:{port} lehnt die Verbindung ab. Stelle sicher, dass der Server läuft und die RCON-Einstellungen korrekt sind."}), 500
+    except TimeoutError:
+        return jsonify({"error": f"Zeitüberschreitung: Keine Antwort vom RCON-Server {server}:{port}. Stelle sicher, dass der Server erreichbar ist."}), 500
+    except ValueError as ve:
+        return jsonify({"error": f"Ungültiger Wert: {str(ve)}"}), 400
     except Exception as e:
-        return jsonify({"error": f"Fehler beim Senden des Befehls: {str(e)}"}), 500
+        import traceback
+        error_details = traceback.format_exc()
+        return jsonify({"error": f"Unerwarteter Fehler beim Senden des Befehls: {str(e)}", "details": error_details}), 500
+
+
+
 @app.route('/start-knife-round', methods=['POST'])
 def start_knife_round():
     if 'steam_name' not in session:
