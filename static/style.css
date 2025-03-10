@@ -153,7 +153,7 @@ pre {
   margin-bottom: 5px;
 }
 
-/* Hauptinhalt wieder mittig */
+
 .content {
   display: flex;
   flex-direction: column;
@@ -161,7 +161,7 @@ pre {
   justify-content: center;
   min-height: 100vh;
   text-align: center;
-  margin-left: 0; /* Entfernt die Verschiebung */
+  margin-left: 0; 
 }
 
 form {
