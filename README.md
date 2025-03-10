@@ -83,7 +83,13 @@ SECRET_KEY=ein_geheimer_schluessel
 
 # Admin-IDs (SteamID64, durch Komma getrennt)
 ADMIN_STEAM_IDS=
+
+ADMIN_OVERRIDE=True
+
+PLAYER_OVERRIDE=false
+
 ```
+
 
 **🚨 WICHTIG:**  
 - **STEAM_API_KEY** kannst du unter [https://steamcommunity.com/dev/apikey](https://steamcommunity.com/dev/apikey) erstellen.
