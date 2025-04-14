@@ -1,4 +1,4 @@
-# Standalone RCON Client
+# Standalone RCON Client for CS-2
 
 Ein einfacher, webbasiertes RCON-Tool für CS2-Server. Die Anwendung nutzt Flask als Backend und bietet eine benutzerfreundliche Weboberfläche für die Verwaltung und das Senden von RCON-Befehlen.
 
