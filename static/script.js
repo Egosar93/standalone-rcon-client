@@ -141,7 +141,6 @@ function populateGameModeAndMapDropdowns() {
     { value: "game_mode 2; game_type 1", text: "Deathmatch" },
     { value: "game_mode 0; game_type 2", text: "Training" },
     { value: "game_mode 0; game_type 3", text: "Custom" },
-    { value: "game_mode 0; game_type 4", text: "Cooperative" },
     { value: "game_mode 0; game_type 5", text: "Skirmish" }
   ];
 
@@ -151,7 +150,9 @@ function populateGameModeAndMapDropdowns() {
     "de_nuke",
     "de_mirage",
     "de_overpass",
-    "de_vertigo"
+    "de_vertigo",
+    "de_train",
+    "de_ancient"
   ];
 
   gameModes.forEach(mode => {
@@ -175,16 +176,14 @@ function populateCommandDropdown() {
 
   const commands = [
     "status",
-    "changelevel de_dust2",
-    "kick all",
+    "changelevel",
     "mp_restartgame 1",
     "mp_limitteams 1",
     "mp_autoteambalance 0",
     "bot_add",
     "bot_kick",
     "mp_roundtime 60",
-    "sv_cheats 1",
-    "sv_gravity 200"
+
   ];
 
 
